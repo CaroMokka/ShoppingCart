@@ -1,5 +1,6 @@
 import React from "react";
 import { Card, Button } from "react-bootstrap";
+import { useShoppingCart } from "../context/ShoppingCartContext"; //hook custom
 import { formatCurrency } from "../utils/formatCurrency";
 
 type StoreItemsProps = {
@@ -10,7 +11,13 @@ type StoreItemsProps = {
 };
 
 export function StoreItem({ id, name, price, imgUrl }: StoreItemsProps) {
-  const quantity = 1;
+  const {
+    getItemsQuantity,
+    increaseCartQuantity,
+    decreaseCartQuantity,
+    removeFromCart,
+  } = useShoppingCart();
+  const quantity = getItemsQuantity(id)
 
   return (
     <Card className="h-100">
@@ -26,8 +33,8 @@ export function StoreItem({ id, name, price, imgUrl }: StoreItemsProps) {
           <span className="ms-2 text-muted">{formatCurrency(price)}</span>
         </Card.Title>
         <div className="mt-auto">
-          { quantity == 0 ? (
-            <Button className="w-100">+ Add to cart</Button>
+          {quantity == 0 ? (
+            <Button className="w-100" onClick={() => increaseCartQuantity(id)} >+ Add to cart</Button>
           ) : (
             <div
               className="d-flex justify-content-center align-items-center flex-column"
@@ -37,13 +44,15 @@ export function StoreItem({ id, name, price, imgUrl }: StoreItemsProps) {
                 className="d-flex justify-content-center align-items-center"
                 style={{ gap: ".5rem" }}
               >
-                <Button>-</Button>
+                <Button onClick={() => decreaseCartQuantity(id)} >-</Button>
                 <div>
-                <span className="fs-3">{quantity}</span> in the cart
+                  <span className="fs-3">{quantity}</span> in the cart
                 </div>
-                <Button>+</Button>
+                <Button onClick={() => increaseCartQuantity(id)} >+</Button>
               </div>
-              <Button variant="danger" size="sm" >Remove</Button>
+              <Button variant="danger" size="sm" onClick={() => removeFromCart(id)} >
+                Remove
+              </Button>
             </div>
           )}
         </div>
